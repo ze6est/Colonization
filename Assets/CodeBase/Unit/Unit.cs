@@ -2,12 +2,17 @@
 
 public class Unit : MonoBehaviour
 {
+    private static int Id;    
+
     private float _radius;
 
-    public float Radius { get { return _radius; } }    
+    public int Number { get; private set; }
+    public float Radius { get { return _radius; } }
 
-    private void OnValidate()
+    private void Awake()
     {
-        _radius = GetComponentInChildren<CapsuleCollider>().radius;
-    }
+        Id++;
+        Number = Id;
+        _radius = GetComponentInChildren<CapsuleCollider>().radius;        
+    }    
 }

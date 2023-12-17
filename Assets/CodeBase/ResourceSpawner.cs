@@ -1,12 +1,11 @@
 using System.Collections;
-using Assets.CodeBase;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class ResourceSpawner : MonoBehaviour
 {
     [SerializeField] private MaxSpawnPointPosition _ground;
-    [SerializeField] private float _offset;
+    [SerializeField] private float _spawnCheckRadiusResource;
     [SerializeField] private LayerMask _interferencesMask;
     [SerializeField] private float _duration;
 
@@ -32,7 +31,7 @@ public class ResourceSpawner : MonoBehaviour
         while (_isGameWorked)
         {
             Vector3 spawnPosition;
-            bool isPositionOccupied = SpawnPointInstaller.TrySetPosition(out spawnPosition, _ground.X, _ground.Z, _resource.Radius + _offset, _interferencesMask);
+            bool isPositionOccupied = SpawnPointInstaller.TrySetPosition(out spawnPosition, _ground.X, _ground.Z, _spawnCheckRadiusResource, _interferencesMask);
 
             if (!isPositionOccupied)
                 Instantiate(_resource, spawnPosition, Quaternion.identity);

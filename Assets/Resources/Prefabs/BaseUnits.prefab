@@ -118,8 +118,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2826779352556097603}
+  - component: {fileID: 8029652226051525384}
   - component: {fileID: 2141100842117692061}
   - component: {fileID: 3863917559274782838}
+  - component: {fileID: 6221560324807553621}
+  - component: {fileID: 2273742141760706142}
   m_Layer: 7
   m_Name: BaseUnits
   m_TagString: Untagged
@@ -143,6 +146,19 @@ Transform:
   - {fileID: 5204086574563226022}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8029652226051525384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2689797643291773667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2cfbae9969ac7004b9832a280a3395cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _resourceCollectionDuration: 2
 --- !u!114 &2141100842117692061
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -157,11 +173,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _ground: {fileID: 0}
   _countUnits: 3
-  _maxSpawnRadius: 1.3
-  _offset: 0.2
+  _maxSpawnRadius: 1.5
+  _spawnCheckRadiusUnit: 1
   _interferencesMask:
     serializedVersion: 2
-    m_Bits: 896
+    m_Bits: 1920
 --- !u!114 &3863917559274782838
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174,3 +190,49 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5d545b5286e49e4daaea0e6ed3d64b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _scanRadius: 50
+  _duration: 1
+  _newResourcesMask:
+    serializedVersion: 2
+    m_Bits: 512
+--- !u!114 &6221560324807553621
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2689797643291773667}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 98ec0dbcd5f94fb40b4a4f1857680056, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _view: {fileID: 0}
+  _countResourcesAtStart: 0
+--- !u!54 &2273742141760706142
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2689797643291773667}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 0
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0

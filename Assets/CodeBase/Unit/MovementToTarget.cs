@@ -1,27 +1,23 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Events;
 
+[RequireComponent(typeof(Rigidbody))]
 public class MovementToTarget : MonoBehaviour
 {
     [SerializeField] private float _speed;
     [SerializeField] private float _speedRotation;
 
     private Vector3 _targetPosition;
-    private Coroutine _moveToTargetJob;
-    private Coroutine _rotateToTargetJob;
-    private bool _isTargetNotReached;
-
-    public event UnityAction TargetReached;
+    private Rigidbody _rigidbody;
+    private bool _isTargetNotReached;    
 
     private void Start()
     {
+        _rigidbody = GetComponent<Rigidbody>();
         _isTargetNotReached = true;
-        _targetPosition = new Vector3(8, 0, 8);
-        _moveToTargetJob = StartCoroutine(MoveToTarget(_targetPosition, 1.1f));
     }
 
-    private IEnumerator MoveToTarget(Vector3 targetPosition, float minDistanceToTargetForAction)
+    public IEnumerator MoveToTarget(Vector3 targetPosition, float minDistanceToTargetForAction)
     {
         _targetPosition = targetPosition;        
 
@@ -29,25 +25,20 @@ public class MovementToTarget : MonoBehaviour
         {
             Vector3 currentTargetPosition = new Vector3(_targetPosition.x, transform.position.y, _targetPosition.z);
 
-            _rotateToTargetJob = StartCoroutine(RotateToTarget(currentTargetPosition));
+            StartCoroutine(RotateToTarget(currentTargetPosition));
 
-            transform.position = Vector3.MoveTowards(transform.position, currentTargetPosition, _speed * Time.deltaTime);            
+            ResetTransform();
 
-            if (Vector3.Distance(_targetPosition, transform.position) <= minDistanceToTargetForAction)
-            {
-                _isTargetNotReached = false;
+            transform.position = Vector3.MoveTowards(transform.position, currentTargetPosition, _speed * Time.deltaTime);
 
-                if (_moveToTargetJob != null)
-                {
-                    StopCoroutine(_rotateToTargetJob);
-                    StopCoroutine(_moveToTargetJob);
-                }
-
-                TargetReached?.Invoke();
-            }
+            if (Vector3.Distance(_targetPosition, transform.position) <= minDistanceToTargetForAction)            
+                _isTargetNotReached = false;            
 
             yield return null;
         }
+
+        ResetTransform();
+        _isTargetNotReached = true;
     }
 
     private IEnumerator RotateToTarget(Vector3 currentTargetPosition)
@@ -60,5 +51,11 @@ public class MovementToTarget : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    private void ResetTransform()
+    {
+        _rigidbody.velocity = Vector3.zero;
+        transform.position = new Vector3(transform.position.x, 0, transform.position.z);
     }
 }

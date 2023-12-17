@@ -6,7 +6,7 @@ public class Resource : MonoBehaviour
 
     public float Radius { get { return _radius; } }
 
-    private void OnValidate()
+    private void Awake()
     {
         _radius = GetComponentInChildren<SphereCollider>().radius;
     }

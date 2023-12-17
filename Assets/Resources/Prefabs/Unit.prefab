@@ -11,7 +11,8 @@ GameObject:
   - component: {fileID: 5784128372120587633}
   - component: {fileID: -7418747749494721697}
   - component: {fileID: 4296792689043507827}
-  - component: {fileID: 1618696853360955282}
+  - component: {fileID: 5968678549503381975}
+  - component: {fileID: -6068950290945988852}
   m_Layer: 8
   m_Name: Unit
   m_TagString: Untagged
@@ -59,9 +60,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e9bc58864f9c1a48a0a9e048eca4a01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _speed: 1
-  _speedRotation: 10
---- !u!54 &1618696853360955282
+  _speed: 2
+  _speedRotation: 5
+--- !u!114 &5968678549503381975
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1476930215712295469}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35f2c84188c8e374986b95d0e34f3701, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _offsetToTargetForAction: 0.15
+  _liftingHeight: 1
+--- !u!54 &-6068950290945988852
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -83,7 +98,7 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 84
