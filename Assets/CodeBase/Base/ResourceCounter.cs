@@ -1,23 +1,23 @@
 using UnityEngine;
 
-[RequireComponent(typeof(BaseUnits))]
+[RequireComponent(typeof(SenderForResources))]
 public class ResourceCounter : MonoBehaviour
 {
     [SerializeField] ResourceCounterView _view;
     [SerializeField] private int _countResourcesAtStart;
 
-    private BaseUnits _baseUnits;
+    private SenderForResources _senderForResources;
     private int _countCollectedResources;
 
     private void Awake()
     {
-        _baseUnits = GetComponent<BaseUnits>();
+        _senderForResources = GetComponent<SenderForResources>();
         _countCollectedResources += _countResourcesAtStart;
     }
 
     private void OnEnable()
     {
-        _baseUnits.ResourceCollected += OnResourceCollected;
+        _senderForResources.ResourceCollected += OnResourceCollected;
     }
 
     private void Start()
@@ -27,7 +27,7 @@ public class ResourceCounter : MonoBehaviour
 
     private void OnDisable()
     {
-        _baseUnits.ResourceCollected -= OnResourceCollected;
+        _senderForResources.ResourceCollected -= OnResourceCollected;
     }
 
     private void OnResourceCollected()

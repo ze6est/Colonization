@@ -1,44 +1,32 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Events;
 
 [RequireComponent(typeof(UnitSpawner))]
-[RequireComponent(typeof(ResourcesScaner))]
+[RequireComponent(typeof(SenderForResources))]
 public class BaseUnits : MonoBehaviour
-{
-    [SerializeField] private float _resourceCollectionDuration;
-
-    private float _radius;
+{    
     private UnitSpawner _unitSpawner;
-    private ResourcesScaner _resourcesScaner;
+    private SenderForResources _senderForResources;
     private List<Unit> _freeUnits = new List<Unit>();
-    private List<Unit> _occupiedUnits = new List<Unit>();
-    private Unit _currentFreeUnit;
-    private Resource _currentTarget;
-    private float _targetRadius;
-    private bool _isGameWorked;
-
-    public event UnityAction ResourceCollected;
+    private List<Unit> _occupiedUnits = new List<Unit>();    
+    private Coroutine _collectResourcesJob;      
 
     private void Awake()
-    {
-        _radius = GetComponentInChildren<CapsuleCollider>().radius;
+    {        
         _unitSpawner = GetComponent<UnitSpawner>();
-        _resourcesScaner = GetComponent<ResourcesScaner>();
+        _senderForResources = GetComponent<SenderForResources>();
     }
 
     private void OnEnable()
     {
         _unitSpawner.UnitCreated += OnUnitCreated;
-    }
+        _senderForResources.UnitReleased += OnUnitReleased;
+    }    
 
     private void Start()
-    {
-        _isGameWorked = true;
-
-        StartCoroutine(TrySendUnitForNearestResource());
+    {        
+        _collectResourcesJob = StartCoroutine(_senderForResources.TrySendUnitForNearestResource());        
     }
 
     private void OnDisable()
@@ -51,55 +39,26 @@ public class BaseUnits : MonoBehaviour
         _freeUnits.Add(unit);
     }
 
-    private IEnumerator TrySendUnitForNearestResource()
+    private void OnUnitReleased(Unit releasedUnit)
     {
-        WaitForSeconds waitTime = new WaitForSeconds(_resourceCollectionDuration);
+        Unit freeUnit = _occupiedUnits.First(unit => unit.Number == releasedUnit.Number);
 
-        while (_isGameWorked)
-        {
-            yield return waitTime;
+        _occupiedUnits.Remove(freeUnit);
+        _freeUnits.Add(freeUnit);
+    }
 
-            yield return StartCoroutine(FindResource());
-
-            yield return StartCoroutine(FindFreeUnit());
-
-            CollectingResources collectingResources = _currentFreeUnit.GetComponent<CollectingResources>();
-            collectingResources.ResourceDelivered += OnResourceDelivered;
-
-            StartCoroutine(collectingResources.Collect(_currentTarget, _targetRadius, transform.position, _radius));
-        }
-    }    
-
-    private IEnumerator FindFreeUnit()
+    public bool TryGetFreeUnit(out Unit _currentFreeUnit)
     {
-        while(_freeUnits.Count == 0)
+        if(_freeUnits.Count == 0)
         {
-            yield return null;
+            _currentFreeUnit = null;
+            return false;
         }
 
         _currentFreeUnit = _freeUnits.First();
         _freeUnits.Remove(_currentFreeUnit);
-        _occupiedUnits.Add(_currentFreeUnit);        
-    }
+        _occupiedUnits.Add(_currentFreeUnit);
 
-    private IEnumerator FindResource()
-    {
-        while(!_resourcesScaner.TryGetTarget(out _currentTarget, out _targetRadius))
-        {
-            yield return null;
-        }        
-    }
-
-    private void OnResourceDelivered(Unit acceptedUnit)
-    {
-        Unit freeUnit = _occupiedUnits.First(unit => unit.Number == acceptedUnit.Number);        
-
-        CollectingResources collectingResources = freeUnit.GetComponent<CollectingResources>();
-        collectingResources.ResourceDelivered -= OnResourceDelivered;
-
-        _occupiedUnits.Remove(freeUnit);
-        _freeUnits.Add(freeUnit);
-
-        ResourceCollected?.Invoke();
+        return true;
     }
 }

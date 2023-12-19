@@ -276,6 +276,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 704803103378615198, guid: c8f07ec4108375e4bae1a9f1e2a01997, type: 3}
+      propertyPath: _resourceCollectionDuration
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2141100842117692061, guid: c8f07ec4108375e4bae1a9f1e2a01997, type: 3}
       propertyPath: _ground
       value: 
