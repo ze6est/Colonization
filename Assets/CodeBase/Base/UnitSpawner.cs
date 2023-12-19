@@ -1,8 +1,10 @@
+using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
+[RequireComponent(typeof(ResourceCounter))]
 public class UnitSpawner : MonoBehaviour
 {
     [SerializeField] private MaxSpawnPointPosition _ground;
@@ -11,8 +13,8 @@ public class UnitSpawner : MonoBehaviour
     [SerializeField] private float _spawnCheckRadiusUnit;
     [SerializeField] private LayerMask _interferencesMask;
 
-    private Unit _unit;
-    private Coroutine _spawnUnitsJob;
+    private ResourceCounter _counter;
+    private Unit _unit;    
     private float _maxSpawnPointPositionX;
     private float _maxSpawnPointPositionZ;
 
@@ -21,20 +23,30 @@ public class UnitSpawner : MonoBehaviour
     private void Awake()
     {
         _unit = Resources.Load(PrefabsPath.UnitPath).GetComponent<Unit>();
+        _counter = GetComponent<ResourceCounter>();
     }
+
+    private void OnEnable()
+    {
+        _counter.ResourcesForCreatingUnitReady += OnResourcesForCreatingUnitReady;
+    }    
 
     private void Start()
     {
         _maxSpawnPointPositionX = _maxSpawnRadius < _ground.X ? _maxSpawnRadius : _ground.X;
         _maxSpawnPointPositionZ = _maxSpawnRadius < _ground.Z ? _maxSpawnRadius : _ground.Z;
 
-        _spawnUnitsJob = StartCoroutine(SpawnUnits());
+        StartCoroutine(SpawnUnits());
     }
 
     private void OnDisable()
     {
-        if (_spawnUnitsJob != null)
-            StopCoroutine(_spawnUnitsJob);
+        _counter.ResourcesForCreatingUnitReady -= OnResourcesForCreatingUnitReady;
+    }
+
+    private void OnResourcesForCreatingUnitReady()
+    {
+        StartCoroutine(SpawnUnit());
     }
 
     private IEnumerator SpawnUnits()
@@ -42,19 +54,19 @@ public class UnitSpawner : MonoBehaviour
         for (int i = 0; i < _countUnits; i++)
         {
             yield return StartCoroutine(SpawnUnit());
-        }
+        }        
     }
 
     private IEnumerator SpawnUnit()
     {
-        bool isPositionOccupied = true;        
+        bool isPositionOccupied = true;
 
-        while (isPositionOccupied == true)
+        while (isPositionOccupied)
         {
             Vector3 spawnPosition;
-            isPositionOccupied = SpawnPointInstaller.TrySetPosition(out spawnPosition, _maxSpawnPointPositionX, _maxSpawnPointPositionZ, _spawnCheckRadiusUnit, _interferencesMask);            
+            isPositionOccupied = SpawnPointInstaller.TrySetPosition(out spawnPosition, _maxSpawnPointPositionX, _maxSpawnPointPositionZ, _spawnCheckRadiusUnit, _interferencesMask);
 
-            if(!isPositionOccupied)
+            if (!isPositionOccupied)
             {
                 Unit unit = Instantiate(_unit, spawnPosition, Quaternion.identity);
                 UnitCreated?.Invoke(unit);
@@ -62,5 +74,5 @@ public class UnitSpawner : MonoBehaviour
 
             yield return null;
         }        
-    }    
+    }
 }
