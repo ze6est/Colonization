@@ -19,6 +19,7 @@ public class UnitSpawner : MonoBehaviour
     private float _maxSpawnPointPositionZ;
 
     public event UnityAction<Unit> UnitCreated;
+    public event UnityAction UnitForResourcesCreated;
 
     private void Awake()
     {
@@ -46,7 +47,7 @@ public class UnitSpawner : MonoBehaviour
 
     private void OnResourcesForCreatingUnitReady()
     {
-        StartCoroutine(SpawnUnit());
+        StartCoroutine(SpawnUnitForResources());
     }
 
     private IEnumerator SpawnUnits()
@@ -74,5 +75,11 @@ public class UnitSpawner : MonoBehaviour
 
             yield return null;
         }        
+    }
+
+    private IEnumerator SpawnUnitForResources()
+    {
+        yield return StartCoroutine(SpawnUnit());
+        UnitForResourcesCreated?.Invoke();
     }
 }
