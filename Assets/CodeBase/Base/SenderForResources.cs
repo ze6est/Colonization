@@ -7,9 +7,6 @@ using UnityEngine.Events;
 public class SenderForResources : MonoBehaviour
 {
     [SerializeField] private float _resourceCollectionDuration;
-    
-    private Coroutine _findResourceJob;
-    private Coroutine _findFreeUnitJob;
 
     private Unit _currentFreeUnit;
     private float _radius;
@@ -38,19 +35,16 @@ public class SenderForResources : MonoBehaviour
         while (_isCollectResource)
         {
             yield return waitTime;
-
-            yield return _findResourceJob = StartCoroutine(FindResource());
-
-            yield return _findFreeUnitJob = StartCoroutine(FindFreeUnit());
+            yield return StartCoroutine(FindFreeUnit());
+            yield return StartCoroutine(FindResource());            
 
             _collectingResources = _currentFreeUnit.GetComponent<CollectingResources>();
             _collectingResources.ResourceDelivered += OnResourceDelivered;
 
-            StartCoroutine(_collectingResources.Collect(_currentTarget, _targetRadius, transform.position, _radius));
-        }
+            Resource target = _currentTarget;
 
-        StopCoroutine(_findResourceJob);
-        StopCoroutine(_findFreeUnitJob);        
+            StartCoroutine(_collectingResources.Collect(target, _targetRadius, transform.position, _radius));
+        }           
     }
 
     private IEnumerator FindFreeUnit()

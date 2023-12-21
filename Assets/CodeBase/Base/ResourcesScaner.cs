@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class ResourcesScaner : MonoBehaviour
@@ -9,9 +8,10 @@ public class ResourcesScaner : MonoBehaviour
 
     [SerializeField] private float _scanRadius;
     [SerializeField] private float _duration;
-    [SerializeField] private LayerMask _newResourcesMask;
+    [SerializeField] private LayerMask _newResourcesMask;    
 
     private Dictionary<Vector3, Resource> _foundResources = new Dictionary<Vector3, Resource>();    
+
     private bool _isGameWorked;
 
     private void Start()
@@ -33,22 +33,26 @@ public class ResourcesScaner : MonoBehaviour
         {
             float minDistance = int.MaxValue;
             target = null;
-            resourceRadius = 0;
+            resourceRadius = 0;            
+            
+            Vector3 currentPosition = Vector3.zero;
 
-            foreach (Vector3 targetPosition in _foundResources.Keys.ToList())
+            foreach (Vector3 targetPosition in _foundResources.Keys)
             {
                 float distanceToTarget = Vector3.Distance(targetPosition, transform.position);
 
                 if (minDistance < distanceToTarget)
-                    break;
+                    continue;
                 else
                 {
                     minDistance = distanceToTarget;
                     target = _foundResources[targetPosition];
-                    resourceRadius = _foundResources[targetPosition].Radius;
-                    _foundResources.Remove(targetPosition);
+                    currentPosition = targetPosition;                    
                 }
-            }            
+            }
+            
+            resourceRadius = _foundResources[currentPosition].Radius;
+            _foundResources.Remove(currentPosition);            
 
             return true;
         }        
@@ -74,7 +78,7 @@ public class ResourcesScaner : MonoBehaviour
                     _foundResources.Add(position, resource);
 
                     colliders[i].gameObject.layer = LayerMask.NameToLayer(FoundResource);
-                    resource.gameObject.layer = LayerMask.NameToLayer(FoundResource);
+                    resource.gameObject.layer = LayerMask.NameToLayer(FoundResource);                    
                 }
             }
 
