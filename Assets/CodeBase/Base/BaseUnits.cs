@@ -4,34 +4,75 @@ using UnityEngine;
 
 [RequireComponent(typeof(UnitSpawner))]
 [RequireComponent(typeof(SenderForResources))]
+[RequireComponent(typeof(FlagSpawner))]
+[RequireComponent(typeof(SenderConstructionBaseUnits))]
 public class BaseUnits : MonoBehaviour
 {    
     private UnitSpawner _unitSpawner;
     private SenderForResources _senderForResources;
+    private SenderConstructionBaseUnits _senderConstructionBaseUnits;
+    private FlagSpawner _flagSpawner;    
     private List<Unit> _freeUnits = new List<Unit>();
-    private List<Unit> _occupiedUnits = new List<Unit>();    
-    private Coroutine _collectResourcesJob;      
+    private List<Unit> _occupiedUnits = new List<Unit>();
+
+    public SenderConstructionBaseUnits SenderConstructionBaseUnits => _senderConstructionBaseUnits;
+
+    public void Construct(Unit unit)
+    {        
+        _freeUnits.Add(unit);
+    }
 
     private void Awake()
     {        
         _unitSpawner = GetComponent<UnitSpawner>();
         _senderForResources = GetComponent<SenderForResources>();
+        _senderConstructionBaseUnits = GetComponent<SenderConstructionBaseUnits>();
+        _flagSpawner = GetComponent<FlagSpawner>();
+
+        _unitSpawner.enabled = true;
+        _senderConstructionBaseUnits.enabled = false;
     }
 
     private void OnEnable()
     {
         _unitSpawner.UnitCreated += OnUnitCreated;
         _senderForResources.UnitReleased += OnUnitReleased;
-    }    
-
-    private void Start()
-    {        
-        _collectResourcesJob = StartCoroutine(_senderForResources.TrySendUnitForNearestResource());        
+        _flagSpawner.FlagReadyToInstalled += OnFlagReadyToInstalled;        
     }
 
     private void OnDisable()
     {
         _unitSpawner.UnitCreated += OnUnitCreated;
+        _flagSpawner.FlagReadyToInstalled -= OnFlagReadyToInstalled;        
+    }
+
+    public bool GetFreeUnit(out Unit _currentFreeUnit)
+    {
+        if (_freeUnits.Count == 0)
+        {
+            _currentFreeUnit = null;
+            return false;
+        }
+
+        _currentFreeUnit = _freeUnits.First();
+        _freeUnits.Remove(_currentFreeUnit);
+        _occupiedUnits.Add(_currentFreeUnit);
+
+        return true;
+    }
+
+    public bool GiveUnitToBuildBase(out Unit _currentFreeUnit)
+    {
+        if (_freeUnits.Count == 0)
+        {
+            _currentFreeUnit = null;
+            return false;
+        }
+
+        _currentFreeUnit = _freeUnits.First();
+        _freeUnits.Remove(_currentFreeUnit);        
+
+        return true;
     }
 
     private void OnUnitCreated(Unit unit)
@@ -47,18 +88,17 @@ public class BaseUnits : MonoBehaviour
         _freeUnits.Add(freeUnit);
     }
 
-    public bool TryGetFreeUnit(out Unit _currentFreeUnit)
+    private void OnFlagReadyToInstalled()
     {
-        if(_freeUnits.Count == 0)
-        {
-            _currentFreeUnit = null;
-            return false;
-        }
+        _unitSpawner.enabled = false;
+        _senderConstructionBaseUnits.enabled = true;
+        _senderConstructionBaseUnits.UnitForBuildingBaseSent += OnUnitForBuildingBaseSent;
+    }
 
-        _currentFreeUnit = _freeUnits.First();
-        _freeUnits.Remove(_currentFreeUnit);
-        _occupiedUnits.Add(_currentFreeUnit);
-
-        return true;
+    private void OnUnitForBuildingBaseSent()
+    {
+        _senderConstructionBaseUnits.UnitForBuildingBaseSent -= OnUnitForBuildingBaseSent;
+        _senderConstructionBaseUnits.enabled = false;
+        _unitSpawner.enabled = true;
     }
 }

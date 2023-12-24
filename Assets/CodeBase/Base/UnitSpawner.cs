@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -7,29 +6,34 @@ using UnityEngine.Events;
 [RequireComponent(typeof(ResourceCounter))]
 public class UnitSpawner : MonoBehaviour
 {
-    [SerializeField] private MaxSpawnPointPosition _ground;
-    [SerializeField] private int _countUnits;
+    [SerializeField] private int _countUnitsAtStart;
     [SerializeField] private float _maxSpawnRadius;
     [SerializeField] private float _spawnCheckRadiusUnit;
     [SerializeField] private LayerMask _interferencesMask;
 
+    private MaxSpawnPointPosition _ground;
     private ResourceCounter _counter;
     private Unit _unit;    
     private float _maxSpawnPointPositionX;
-    private float _maxSpawnPointPositionZ;
+    private float _maxSpawnPointPositionZ;    
 
     public event UnityAction<Unit> UnitCreated;
     public event UnityAction UnitForResourcesCreated;
 
+    public void Construct(MaxSpawnPointPosition ground)
+    {
+        _ground = ground;
+    }
+
     private void Awake()
     {
-        _unit = Resources.Load(PrefabsPath.UnitPath).GetComponent<Unit>();
+        _unit = Resources.Load(PrefabsPath.Unit).GetComponent<Unit>();
         _counter = GetComponent<ResourceCounter>();
     }
 
     private void OnEnable()
     {
-        _counter.ResourcesForCreatingUnitReady += OnResourcesForCreatingUnitReady;
+        _counter.ResourcesForCreatingUnitReady += OnResourcesForCreatingUnitReady;        
     }    
 
     private void Start()
@@ -42,7 +46,7 @@ public class UnitSpawner : MonoBehaviour
 
     private void OnDisable()
     {
-        _counter.ResourcesForCreatingUnitReady -= OnResourcesForCreatingUnitReady;
+        _counter.ResourcesForCreatingUnitReady -= OnResourcesForCreatingUnitReady;        
     }
 
     private void OnResourcesForCreatingUnitReady()
@@ -52,7 +56,7 @@ public class UnitSpawner : MonoBehaviour
 
     private IEnumerator SpawnUnits()
     {
-        for (int i = 0; i < _countUnits; i++)
+        for (int i = 0; i < _countUnitsAtStart; i++)
         {
             yield return StartCoroutine(SpawnUnit());
         }        

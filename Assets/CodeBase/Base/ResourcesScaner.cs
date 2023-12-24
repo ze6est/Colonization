@@ -14,6 +14,13 @@ public class ResourcesScaner : MonoBehaviour
 
     private bool _isGameWorked;
 
+    public void Construct(LayerMask newResourcesMask, float scanRadius = 50, float duration = 2)
+    {
+        _scanRadius = scanRadius;
+        _duration = duration;
+        _newResourcesMask = newResourcesMask;
+    }
+
     private void Start()
     {
         _isGameWorked = true;

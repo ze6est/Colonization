@@ -2,19 +2,21 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 
+[RequireComponent(typeof(MaxSpawnPointPosition))]
 public class ResourceSpawner : MonoBehaviour
 {
-    [SerializeField] private MaxSpawnPointPosition _ground;
     [SerializeField] private float _spawnCheckRadiusResource;
     [SerializeField] private LayerMask _interferencesMask;
     [SerializeField] private float _duration;
 
+    private MaxSpawnPointPosition _ground;
     private Resource _resource;    
     private bool _isGameWorked;
 
     private void Awake()
     {        
-        _resource = Resources.Load(PrefabsPath.ResourcePath).GetComponent<Resource>();        
+        _resource = Resources.Load(PrefabsPath.Resource).GetComponent<Resource>();
+        _ground = GetComponent<MaxSpawnPointPosition>();
     }
 
     private void Start()

@@ -18,14 +18,19 @@ public class SenderForResources : MonoBehaviour
     private bool _isCollectResource;
 
     public event UnityAction ResourceCollected;
-    public event UnityAction<Unit> UnitReleased;
+    public event UnityAction<Unit> UnitReleased;    
 
     private void Awake()
     {
         _radius = GetComponentInChildren<CapsuleCollider>().radius;
         _resourcesScaner = GetComponent<ResourcesScaner>();
         _baseUnits = GetComponent<BaseUnits>();
-    }    
+    }
+
+    private void Start()
+    {
+        StartCoroutine(TrySendUnitForNearestResource());
+    }
 
     public IEnumerator TrySendUnitForNearestResource()
     {
@@ -49,7 +54,7 @@ public class SenderForResources : MonoBehaviour
 
     private IEnumerator FindFreeUnit()
     {
-        while (!_baseUnits.TryGetFreeUnit(out _currentFreeUnit))
+        while (!_baseUnits.GetFreeUnit(out _currentFreeUnit))
         {
             yield return null;
         }        
